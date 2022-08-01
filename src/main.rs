@@ -1,20 +1,32 @@
 #![no_std]
 #![no_main]
-
-mod rw;
+#![feature(custom_test_frameworks)]
+#![test_runner(osbuild::test_runner)]
+#![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+use osbuild::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    for i in 0..82 {
-        println!("Printing... [{}]", i);
-    }
-    panic!("Casual panic at {}", 83);
+    println!("Hello world");
+
+    #[cfg(test)]
+    test_main();
+    loop {}
 }
 
+#[cfg(not(test))]
+#[doc(hidden)]
 #[panic_handler]
-pub fn panic(info: &PanicInfo) -> ! {
+pub fn _panic(info: &PanicInfo) -> ! {
     println!("{}", info);
     loop {}
+}
+
+#[cfg(test)]
+#[doc(hidden)]
+#[panic_handler]
+pub fn _panic(info: &PanicInfo) -> ! {
+    osbuild::_testpanic(info)
 }

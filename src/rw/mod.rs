@@ -1,3 +1,4 @@
+pub mod serial;
 pub mod vga;
 
 use lazy_static::lazy_static;
@@ -5,29 +6,6 @@ use spin::Mutex;
 
 lazy_static! {
     pub static ref SCREEN: Mutex<vga::Screen<'static>> = Mutex::new(vga::Screen::new(0x0a));
-}
-
-#[macro_export]
-macro_rules! print {
-    ($($args:tt)*) => {
-        $crate::rw::_print(format_args!($($args)*))
-    };
-}
-
-#[macro_export]
-macro_rules! println {
-    () => {
-        $crate::print!("\n")
-    };
-    ($($args:tt)*) => {
-        $crate::print!("{}\n", format_args!($($args)*))
-    }
-}
-
-#[doc(hidden)]
-pub fn _print(args: core::fmt::Arguments) {
-    use core::fmt::Write;
-    SCREEN.lock().write_fmt(args).unwrap();
 }
 
 #[allow(dead_code)]

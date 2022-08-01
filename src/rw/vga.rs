@@ -5,11 +5,13 @@ const BUFFER_WIDTH: usize = 80;
 
 #[allow(dead_code)]
 #[derive(Clone, Copy)]
+#[repr(C)]
 struct Character {
     character: u8,
     color_code: u8,
 }
 
+#[repr(transparent)]
 struct Buffer {
     items: [[Volatile<Character>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }

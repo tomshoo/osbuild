@@ -7,3 +7,6 @@ build-std = ["core", "compiler_builtins"]
 
 [target.'cfg(target_os = "linux")']
 rustflags=["-C", "link-arg=-nostartfiles"]
+
+[target.'cfg(target_os = "none")']
+runner = "bootimage runner"

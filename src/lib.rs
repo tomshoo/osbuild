@@ -1,9 +1,11 @@
 #![no_std]
 #![cfg_attr(test, no_main)]
+#![feature(abi_x86_interrupt)]
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+pub mod intr;
 pub mod macros;
 pub mod rw;
 
@@ -40,6 +42,7 @@ pub fn test_runner(tests: &[&dyn Tests]) {
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
     loop {}
 }
@@ -63,4 +66,9 @@ pub fn exti_qemu(code: QemuExitStatus) {
         let mut port = Port::new(0xf4);
         port.write(code as u32)
     }
+}
+
+// Interrupt Descriptor Table
+pub fn init() {
+    intr::idt_init();
 }

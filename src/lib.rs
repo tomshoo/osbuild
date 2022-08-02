@@ -30,6 +30,12 @@ impl<T: Fn()> Tests for T {
     }
 }
 
+pub fn hlt() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
 pub fn test_runner(tests: &[&dyn Tests]) {
     serialout!("Found {} test(s)...\n", tests.len());
     for test in tests {
@@ -44,7 +50,7 @@ pub fn test_runner(tests: &[&dyn Tests]) {
 pub extern "C" fn _start() -> ! {
     init();
     test_main();
-    loop {}
+    hlt();
 }
 
 pub fn _testpanic(info: &PanicInfo) -> ! {
@@ -72,4 +78,8 @@ pub fn exti_qemu(code: QemuExitStatus) {
 pub fn init() {
     intr::gdt::gdt_init();
     intr::idt_init();
+    unsafe {
+        intr::hw::PICS.lock().initialize();
+    }
+    x86_64::instructions::interrupts::enable();
 }

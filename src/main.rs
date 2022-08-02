@@ -6,23 +6,22 @@
 
 use core::panic::PanicInfo;
 use osbuild::println;
+use x86_64::registers::control::Cr3;
 
 #[allow(unconditional_recursion)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    println!("Starting...");
     osbuild::init();
 
-    fn overflow() {
-        overflow();
-    }
-
-    overflow();
+    let (l4, some) = Cr3::read();
+    println!("{:?}, {:?}", l4.start_address(), some);
 
     #[cfg(test)]
     test_main();
 
-    println!("Hello world");
-    loop {}
+    println!("Done...");
+    osbuild::hlt();
 }
 
 #[cfg(not(test))]

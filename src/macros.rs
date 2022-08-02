@@ -1,5 +1,7 @@
 use core::fmt::Write;
 
+use x86_64::instructions::interrupts;
+
 #[macro_export]
 macro_rules! print {
     ($($args:tt)*) => {
@@ -27,7 +29,9 @@ macro_rules! serialout {
 #[doc(hidden)]
 pub fn _print(args: core::fmt::Arguments) {
     use crate::rw::SCREEN;
-    SCREEN.lock().write_fmt(args).unwrap();
+    interrupts::without_interrupts(|| {
+        SCREEN.lock().write_fmt(args).unwrap();
+    })
 }
 
 #[doc(hidden)]

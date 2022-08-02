@@ -70,5 +70,6 @@ pub fn exti_qemu(code: QemuExitStatus) {
 
 // Interrupt Descriptor Table
 pub fn init() {
+    intr::gdt::gdt_init();
     intr::idt_init();
 }

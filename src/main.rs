@@ -7,10 +7,16 @@
 use core::panic::PanicInfo;
 use osbuild::println;
 
+#[allow(unconditional_recursion)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     osbuild::init();
-    x86_64::instructions::interrupts::int3();
+
+    fn overflow() {
+        overflow();
+    }
+
+    overflow();
 
     #[cfg(test)]
     test_main();
